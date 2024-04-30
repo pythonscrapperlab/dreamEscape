@@ -14,7 +14,13 @@ const Book = () => {
     hotel: null,
     guide: null
   });
+  const [passengers, setPassengers] = useState(1);
+  const [departureDate, setDepartureDate] = useState(new Date().toISOString().slice(0, 10));
+  const [returnDate, setReturnDate] = useState(new Date().toISOString().slice(0, 10));
+  const [differenceInDays, setDifferenceInDays] = useState(0);
   const [price, setPrice] = useState(false);
+
+  
 
   // display return date if `round trip` is selected
   const roundTripHandleChange = (event) => {
@@ -103,13 +109,16 @@ const Book = () => {
   // Event handler for clicking "Book Now" button
   const handleBookNow = () => {
     // Implement booking functionality here
-    toast.info("Booking added!");
+    toast.success("Booking added!");
   };
 
   const checkBestPrices = (event) => {
     event.preventDefault();
     console.log("CLICK");
-    toast.info("Booking Added !");
+    const departureDateVar = new Date(departureDate);
+    const returnDateVar = new Date(returnDate);
+    setDifferenceInDays(Math.abs(departureDateVar - returnDateVar) / (1000 * 3600 * 24));
+    toast.info("Available Bookings !");
     setPrice(true);
   };
 
@@ -118,6 +127,10 @@ const Book = () => {
     document.getElementById("return-date").style.visibility =
       event.checked && event.id === "one-way" ? "visible" : "hidden";
   };
+
+  const handleNumOfPassengers = (event) => {
+    setPassengers(event.target.value);
+  }
 
   return (
     <div
@@ -169,27 +182,27 @@ const Book = () => {
                 </div>
                 <div>
                   <label className="block">Passengers</label>
-                  <select>
+                  <select onChange={handleNumOfPassengers}>
                     <option value="1">1 Passenger</option>
-                    <option value="1">2 Passengers</option>
-                    <option value="1">3 Passengers</option>
-                    <option value="1">4 Passengers</option>
-                    <option value="1">5 Passengers</option>
-                    <option value="1">6 Passengers</option>
-                    <option value="1">7 Passengers</option>
-                    <option value="1">8 Passengers</option>
-                    <option value="1">9 Passengers</option>
+                    <option value="2">2 Passengers</option>
+                    <option value="3">3 Passengers</option>
+                    <option value="4">4 Passengers</option>
+                    <option value="5">5 Passengers</option>
+                    <option value="6">6 Passengers</option>
+                    <option value="7">7 Passengers</option>
+                    <option value="8">8 Passengers</option>
+                    <option value="9">9 Passengers</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 col-span-1 md:col-span-3 gap-4 pb-4 place-items-stretch">
                 <div id="departure-date" className="w-full">
                   <label className="block">Departure Date</label>
-                  <input type="date" />
+                  <input type="date" defaultValue={departureDate} onChange={(e) => setDepartureDate(e.target.value)}/>
                 </div>
                 <div id="return-date" className="w-full">
                   <label className="block">Return Date</label>
-                  <input type="date" />
+                  <input type="date" defaultValue={returnDate} onChange={(e) => setReturnDate(e.target.value)}/>
                 </div>
                 <div className="pt-6">
                   <button
@@ -220,7 +233,7 @@ const Book = () => {
                       />
                       <div className="font-normal ml-3">{flight.name}</div>
                       <div className="text-red-400 font-semibold ml-auto">
-                        ${flight.price}
+                        ${flight.price*passengers}
                       </div>
                     </div>
                   ))}
@@ -238,7 +251,7 @@ const Book = () => {
                       />
                       <div className="font-normal ml-3">{hotel.name}</div>
                       <div className="text-red-400 font-semibold ml-auto">
-                        ${hotel.price}
+                        ${hotel.price*differenceInDays*passengers}
                       </div>
                     </div>
                   ))}
